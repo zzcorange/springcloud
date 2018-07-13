@@ -1,0 +1,18 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8764
+spring:
+  application:
+    name: service-ribbon
+debug: true
+feign:
+  hystrix:
+    enabled: true
+    compression:
+      request:
+        enabled: true
+      response:
+        enabled: true
