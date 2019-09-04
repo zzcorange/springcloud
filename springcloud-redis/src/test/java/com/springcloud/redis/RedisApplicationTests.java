@@ -146,4 +146,5 @@ public class RedisApplicationTests {
             System.out.println(s.toString());
         }
     }
+
 }

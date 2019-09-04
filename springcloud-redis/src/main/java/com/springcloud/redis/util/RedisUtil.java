@@ -104,4 +104,7 @@ public class RedisUtil {
     public Set rangeByScore(String key, double begin, double end){
         return   zSetOperations.rangeByScore(key,begin,end);
     }
+    public boolean getLock(String key,String value){
+       return  stringOperations.setIfAbsent(key,value);
+    }
 }

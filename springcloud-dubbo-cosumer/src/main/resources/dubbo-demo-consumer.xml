@@ -23,13 +23,11 @@
 
     <!-- consumer's application name, used for tracing dependency relationship (not a matching criterion),
     don't set it same as provider -->
-    <dubbo:application name="demo-provider"/>
+    <dubbo:application name="demo-consumer"/>
+
     <!-- use multicast registry center to discover service -->
-    <dubbo:registry address="119.23.74.163:2181" protocol="zookeeper" id="ali" group="producter" cluster=""/>
-    <dubbo:protocol name="dubbo" port="20886" register="true" />
-    <dubbo:provider retries="2" loadbalance="random"/>
+    <dubbo:registry address="119.23.74.163:2181" protocol="zookeeper" id="ali"/>
     <!-- generate proxy for the remote service, then demoService can be used in the same way as the
     local regular interface -->
-    <dubbo:annotation package="com.zzc.dubboproducter.product"  />
     <dubbo:monitor protocol="registry"/>
-  </beans>
+</beans>

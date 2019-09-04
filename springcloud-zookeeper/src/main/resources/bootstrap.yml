@@ -1,0 +1,11 @@
+server:
+  port: 8080
+  application:
+    name: zookeepertest
+spring:
+  cloud:
+    zookeeper:
+      connect-string: 119.23.74.163:2181,119.23.74.163:2182,119.23.74.163:2183
+      discovery:
+        root: /zk
+        enabled: true

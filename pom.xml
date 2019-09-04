@@ -8,6 +8,27 @@
     <version>0.0.1-SNAPSHOT</version>
     <modules>
         <module>tess4j</module>
+        <module>springcloud-configclient</module>
+        <module>springcloud-configeurekaserver</module>
+        <module>springcloud-configserver</module>
+        <module>springcloud-docker</module>
+        <module>springcloud-dubbo-api</module>
+        <module>springcloud-dubbo-cosumer</module>
+        <module>springcloud-dubbo-producter</module>
+        <module>springcloud-eurekaclient</module>
+        <module>springcloud-eurekaserver</module>
+        <module>springcloud-feign</module>
+        <module>springcloud-redis</module>
+        <module>springcloud-ribbon</module>
+        <module>springcloud-servicehihystrix</module>
+        <module>springcloud-servicelucy</module>
+        <module>springcloud-servicetubine</module>
+        <module>springcloud-zipkinclient-hi</module>
+        <module>springcloud-zipkinclient-miya</module>
+        <module>springcloud-zipkinclient-hi</module>
+        <module>springcloud-zipkinserver</module>
+        <module>springcloud-zuul</module>
+        <module>springcloud-lambda</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -32,7 +53,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -44,7 +64,11 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.3</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>

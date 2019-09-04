@@ -11,6 +11,9 @@ public class DubboCosumerApplicationTests {
 
     @Test
     public void contextLoads() {
+        while (true){
+
+        }
     }
 
 }

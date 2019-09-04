@@ -1,0 +1,6 @@
+server:
+  port: 8082
+  tomcat:
+    host:
+      autoDeploy: false
+      deployOnStartup:  false

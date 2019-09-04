@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
 @ImportResource(locations= {"classpath:dubbo-demo-consumer.xml"})
-
 public class DubboProducterApplication {
 
     public static void main(String[] args) {
