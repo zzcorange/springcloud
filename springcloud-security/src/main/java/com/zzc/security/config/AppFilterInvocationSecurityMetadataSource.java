@@ -1,5 +1,6 @@
 package com.zzc.security.config;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.security.web.access.intercept.FilterInvocationSecurit
 import org.springframework.util.AntPathMatcher;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,25 +46,34 @@ public class AppFilterInvocationSecurityMetadataSource implements FilterInvocati
 
     // 这里的需要从DB加载
     private  Map<String,String> urlRoleMap = new HashMap<String,String>(){{
+        put("/login","ROLE_ANONYMOUS");
         put("/open/**","ROLE_ANONYMOUS");
         put("/health","ROLE_ANONYMOUS");
         put("/restart","ROLE_ADMIN");
         put("/demo","ROLE_USER");
         put("/index","ROLE_USER");
+        put("/ind**","ROLE_ADMIN");
+        put("/testAuth/getDate","ROLE_ADMIN");
+        put("/test/**","ROLE_USER");
     }};
 
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
         FilterInvocation fi = (FilterInvocation) object;
         String url = fi.getRequestUrl();
-
+        ArrayList<String> tempValue = new ArrayList<>();
         for(Map.Entry<String,String> entry:urlRoleMap.entrySet()){
             if(antPathMatcher.match(entry.getKey(),url)){
-                return SecurityConfig.createList(entry.getValue());
+
+                tempValue.add(entry.getValue());
+
             }
         }
-
         //  返回代码定义的默认配置
+        if(tempValue.size()>0){
+            System.out.println(url+"拉取的权限数据："+JSON.toJSONString(tempValue.toArray( new String[tempValue.size()])));
+            return SecurityConfig.createList(tempValue.toArray( new String[tempValue.size()]));
+        }
         return superMetadataSource.getAttributes(object);
     }
 

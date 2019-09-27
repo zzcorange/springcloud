@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.access.vote.UnanimousBased;
@@ -72,10 +73,12 @@ public UserDetailsService userDetailsService()  {
         @Override
         public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
           User user = new User();
-          user.setAuthorities(Arrays.asList(Role.builder().authority("ROLE_USER").build(),Role.builder().authority("USER").build()));
+          ArrayList<Role> list = new ArrayList<>();
+          list.add(Role.builder().authority("ROLE_USER").build());
+          list.add(Role.builder().authority("USER").build());
+          user.setAuthorities(list);
           user.setPassword("$2a$04$Z3KJccDmN8b1BtAcPEH4i.TFv/COOv6ab3mWgBJwxT1sVfQ9LB0Gq");
           user.setUsername(s);
-
           return user;
 
         }
@@ -85,27 +88,25 @@ public UserDetailsService userDetailsService()  {
     @Override
     public void configure(WebSecurity web) throws Exception {
         //配置静态文件不需要认证
-//        web.ignoring().antMatchers("/img/**","/img/*","/jsp/**");
+        web.ignoring().antMatchers("/**.html");
 
     }
     @Bean
     public AccessDecisionManager accessDecisionManager() {
         List<AccessDecisionVoter<? extends Object>> decisionVoters
                 = Arrays.asList(
-                new RoleBasedVoter()
-                ,
-                new WebExpressionVoter(),
-                 new RoleVoter(),
-
+                new RoleBasedVoter(),
+                new MyWebExpressionVoter(),
+//                 new RoleVoter(),
                 new AuthenticatedVoter()
  );
-        return new UnanimousBased(decisionVoters);
+        return new AffirmativeBased(decisionVoters);
     }
     protected void configure(HttpSecurity http) throws Exception {
 //    http.authorizeRequests().antMatchers("/**","/**/*.jpg","**test**","/**/*.jsp").permitAll().and().csrf().disable();
         http
                 .authorizeRequests()
-                .antMatchers("/login","/authentication/form","/test/**").permitAll()
+                .antMatchers("/login","/authentication/form","/test/**","/error.html","/error.html?**").permitAll()
 
                 .anyRequest().authenticated()
                 .accessDecisionManager(accessDecisionManager())
@@ -113,9 +114,10 @@ public UserDetailsService userDetailsService()  {
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/authentication/form")
-                .successForwardUrl("/user/getAll")
+                .successHandler(new MyAuthenticationSuccessHandler())
 
                 .permitAll()
+
                 .and()
 //                .csrf().disable()
                 .logout()
@@ -123,9 +125,6 @@ public UserDetailsService userDetailsService()  {
                 .logoutSuccessUrl("/my/index")
 //                .logoutSuccessHandler(logoutSuccessHandler)
                 .invalidateHttpSession(true)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 // 自定义FilterInvocationSecurityMetadataSource
@@ -138,7 +137,12 @@ public UserDetailsService userDetailsService()  {
                     }
                 })
                 .and()
-                .sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry);
+                .sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry)
+                .and().sessionAuthenticationErrorUrl("/error.html")
+
+// .and().enableSessionUrlRewriting()
+        ;
+        http.exceptionHandling().accessDeniedHandler(new MyAccessDeniedHandler());
         http.httpBasic();
 //                .and()
 //                .apply(securityConfigurerAdapter());
