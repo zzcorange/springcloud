@@ -143,6 +143,7 @@ public UserDetailsService userDetailsService()  {
 // .and().enableSessionUrlRewriting()
         ;
         http.exceptionHandling().accessDeniedHandler(new MyAccessDeniedHandler());
+
         http.httpBasic();
 //                .and()
 //                .apply(securityConfigurerAdapter());
