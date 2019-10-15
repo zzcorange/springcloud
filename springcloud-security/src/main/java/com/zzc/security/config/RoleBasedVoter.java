@@ -6,6 +6,7 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -13,7 +14,6 @@ import java.util.Collection;
  * @Date 2019/9/19
  */
 public class RoleBasedVoter implements AccessDecisionVoter<Object> {
-
     @Override
     public boolean supports(ConfigAttribute attribute) {
         return attribute instanceof org.springframework.security.access.SecurityConfig;

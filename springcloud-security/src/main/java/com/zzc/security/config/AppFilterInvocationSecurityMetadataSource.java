@@ -1,6 +1,9 @@
 package com.zzc.security.config;
 
 import com.alibaba.fastjson.JSON;
+import com.zzc.security.dao.RoleDao;
+import com.zzc.security.dao.UrlDao;
+import com.zzc.security.entity.Url;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,10 +20,7 @@ import org.springframework.security.web.access.intercept.FilterInvocationSecurit
 import org.springframework.util.AntPathMatcher;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author 张真诚
@@ -31,13 +31,25 @@ public class AppFilterInvocationSecurityMetadataSource implements FilterInvocati
 
     private FilterInvocationSecurityMetadataSource superMetadataSource;
 
+    private UrlDao urlDao;
+
+
     @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
         return superMetadataSource.getAllConfigAttributes();
     }
 
-    public AppFilterInvocationSecurityMetadataSource(FilterInvocationSecurityMetadataSource expressionBasedFilterInvocationSecurityMetadataSource){
+    public AppFilterInvocationSecurityMetadataSource(FilterInvocationSecurityMetadataSource expressionBasedFilterInvocationSecurityMetadataSource, UrlDao urlDao){
         this.superMetadataSource = expressionBasedFilterInvocationSecurityMetadataSource;
+        this.urlDao = urlDao;
+        List<Url> urlList = urlDao.queryAll();
+
+        if(urlList==null||urlList.size()==0){
+            System.out.println("权限配置为空，请检查");
+            System.exit(0);
+        }
+
+
 
         // TODO 从数据库加载权限配置
     }
@@ -45,17 +57,7 @@ public class AppFilterInvocationSecurityMetadataSource implements FilterInvocati
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     // 这里的需要从DB加载
-    private  Map<String,String> urlRoleMap = new HashMap<String,String>(){{
-        put("/login","ROLE_ANONYMOUS");
-        put("/open/**","ROLE_ANONYMOUS");
-        put("/health","ROLE_ANONYMOUS");
-        put("/restart","ROLE_ADMIN");
-        put("/demo","ROLE_USER");
-        put("/index","ROLE_USER");
-        put("/ind**","ROLE_ADMIN");
-        put("/testAuth/getDate","ROLE_ADMIN");
-        put("/test/**","ROLE_USER");
-    }};
+    private  Map<String,String> urlRoleMap = new HashMap<String,String>();
 
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {

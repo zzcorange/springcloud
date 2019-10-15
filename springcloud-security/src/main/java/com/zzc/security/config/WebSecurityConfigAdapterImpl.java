@@ -1,5 +1,7 @@
 package com.zzc.security.config;
 
+import com.zzc.security.dao.RoleDao;
+import com.zzc.security.dao.UrlDao;
 import com.zzc.security.entity.Role;
 import com.zzc.security.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +41,9 @@ import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author 张真诚
@@ -52,9 +53,16 @@ import java.util.List;
 @EnableWebSecurity
 @EnableAutoConfiguration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Component
 public class WebSecurityConfigAdapterImpl extends WebSecurityConfigurerAdapter {
     @Autowired
     SessionRegistry sessionRegistry;
+
+    @Autowired
+    private UrlDao urlDao;
+    @Autowired
+    private RoleDao roleDao;
+    public static Map<String,User> loginUser = new HashMap<String,User>();
 @Bean
 public BCryptPasswordEncoder passwordEncoder() { //密码加密
     return new BCryptPasswordEncoder(4);
@@ -73,12 +81,13 @@ public UserDetailsService userDetailsService()  {
         @Override
         public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
           User user = new User();
-          ArrayList<Role> list = new ArrayList<>();
-          list.add(Role.builder().authority("ROLE_USER").build());
-          list.add(Role.builder().authority("USER").build());
+          List<Role> list = roleDao.getRole(s);
+          if(list==null||list.size()==0)
+              throw new UsernameNotFoundException(s+"的权限配置不存在，请检查");
           user.setAuthorities(list);
           user.setPassword("$2a$04$Z3KJccDmN8b1BtAcPEH4i.TFv/COOv6ab3mWgBJwxT1sVfQ9LB0Gq");
           user.setUsername(s);
+
           return user;
 
         }
@@ -88,7 +97,7 @@ public UserDetailsService userDetailsService()  {
     @Override
     public void configure(WebSecurity web) throws Exception {
         //配置静态文件不需要认证
-        web.ignoring().antMatchers("/**.html");
+        web.ignoring().antMatchers("/**.html","/login","/authentication/form","/test/**","/error.html","/error.html?**");
 
     }
     @Bean
@@ -104,6 +113,7 @@ public UserDetailsService userDetailsService()  {
     }
     protected void configure(HttpSecurity http) throws Exception {
 //    http.authorizeRequests().antMatchers("/**","/**/*.jpg","**test**","/**/*.jsp").permitAll().and().csrf().disable();
+
         http
                 .authorizeRequests()
                 .antMatchers("/login","/authentication/form","/test/**","/error.html","/error.html?**").permitAll()
@@ -154,7 +164,7 @@ public UserDetailsService userDetailsService()  {
     }
     @Bean
     public AppFilterInvocationSecurityMetadataSource mySecurityMetadataSource(FilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource) {
-        AppFilterInvocationSecurityMetadataSource securityMetadataSource = new AppFilterInvocationSecurityMetadataSource(filterInvocationSecurityMetadataSource);
+        AppFilterInvocationSecurityMetadataSource securityMetadataSource = new AppFilterInvocationSecurityMetadataSource(filterInvocationSecurityMetadataSource,urlDao);
 
         return securityMetadataSource;
     }

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzc.security.dao.RoleDao" >
+  <select id="getRole" parameterType="String" resultType="com.zzc.security.entity.Role">
+      select role authority from t_role where username = #{username}
+  </select>
+  <insert id="insertRole" parameterType="map">
+      insert into t_role(username,role) values(#{username},#{role})
+  </insert>
+</mapper>
