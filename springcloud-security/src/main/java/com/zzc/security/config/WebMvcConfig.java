@@ -14,8 +14,8 @@ import java.util.List;
  * @Author 张真诚
  * @Date 2019/9/6
  */
-@Configuration
-@EnableWebMvc
+//@Configuration
+//@EnableWebMvc
 public class WebMvcConfig extends WebMvcConfigurationSupport{
 
     /**
@@ -27,7 +27,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport{
 //        registry.addResourceHandler("/jsp/**").addResourceLocations("classpath:/static/jsp/");
         registry.addResourceHandler("/jsp/**").addResourceLocations("classpath:/static/jsp/");
         registry.addResourceHandler("/**.html").addResourceLocations("classpath:/templates/");
-
+        registry.addResourceHandler("/js/**").addResourceLocations("classpath:/static/js/");
 //        registry.addResourceHandler("*.jpg").addResourceLocations("classpath:/static/img");
 
     }

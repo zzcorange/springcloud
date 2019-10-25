@@ -57,7 +57,7 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler{
                  httpServletResponse.getOutputStream().write(json.getBytes());
 
              }else{
-                 httpServletResponse.sendRedirect("/error.html?accept=forbidden");
+                 httpServletResponse.sendRedirect("/error?accept=forbidden");
              }
     }
 

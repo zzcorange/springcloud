@@ -97,14 +97,14 @@ public UserDetailsService userDetailsService()  {
     @Override
     public void configure(WebSecurity web) throws Exception {
         //配置静态文件不需要认证
-        web.ignoring().antMatchers("/**.html","/login","/authentication/form","/test/**","/error.html","/error.html?**");
+        web.ignoring().antMatchers("/**/*.jpg","/**/*.ico","/**/*.img","/**.jpeg","/**/*.js","/**.css");
 
     }
     @Bean
     public AccessDecisionManager accessDecisionManager() {
         List<AccessDecisionVoter<? extends Object>> decisionVoters
                 = Arrays.asList(
-                new RoleBasedVoter(),
+                new RoleBasedVoter(urlDao),
                 new MyWebExpressionVoter(),
 //                 new RoleVoter(),
                 new AuthenticatedVoter()
@@ -116,7 +116,10 @@ public UserDetailsService userDetailsService()  {
 
         http
                 .authorizeRequests()
-                .antMatchers("/login","/authentication/form","/test/**","/error.html","/error.html?**").permitAll()
+                .antMatchers("/**","/**/*.jpg","/login",
+                        "/authentication/form","/test/**",
+                        "/error.html","/error.html?**",
+                        "/logout","/ignore/**").permitAll()
 
                 .anyRequest().authenticated()
                 .accessDecisionManager(accessDecisionManager())
@@ -125,35 +128,35 @@ public UserDetailsService userDetailsService()  {
                 .loginPage("/login")
                 .loginProcessingUrl("/authentication/form")
                 .successHandler(new MyAuthenticationSuccessHandler())
-
+                .failureHandler(new MyAuthenticationFailureHandler())
                 .permitAll()
 
                 .and()
 //                .csrf().disable()
                 .logout()
-                .logoutUrl("/my/logout")
-                .logoutSuccessUrl("/my/index")
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?message=%E7%99%BB%E5%87%BA%E6%88%90%E5%8A%9F")
 //                .logoutSuccessHandler(logoutSuccessHandler)
                 .invalidateHttpSession(true)
+//                .and()
+//                .authorizeRequests()
+//                // 自定义FilterInvocationSecurityMetadataSource
+//                .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+//                    @Override
+//                    public <O extends FilterSecurityInterceptor> O postProcess(
+//                            O fsi) {
+//                        fsi.setSecurityMetadataSource(mySecurityMetadataSource(fsi.getSecurityMetadataSource()));
+//                        return fsi;
+//                    }
+//                })
                 .and()
-                .authorizeRequests()
-                // 自定义FilterInvocationSecurityMetadataSource
-                .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
-                    @Override
-                    public <O extends FilterSecurityInterceptor> O postProcess(
-                            O fsi) {
-                        fsi.setSecurityMetadataSource(mySecurityMetadataSource(fsi.getSecurityMetadataSource()));
-                        return fsi;
-                    }
-                })
-                .and()
-                .sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry)
+                .sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true).expiredUrl("/error?accept=sessionExpired").sessionRegistry(sessionRegistry)
                 .and().sessionAuthenticationErrorUrl("/error.html")
+
 
 // .and().enableSessionUrlRewriting()
         ;
         http.exceptionHandling().accessDeniedHandler(new MyAccessDeniedHandler());
-
         http.httpBasic();
 //                .and()
 //                .apply(securityConfigurerAdapter());
@@ -162,12 +165,12 @@ public UserDetailsService userDetailsService()  {
 //                .deleteCookies(cookieNamesToClear)  ;
         ;
     }
-    @Bean
-    public AppFilterInvocationSecurityMetadataSource mySecurityMetadataSource(FilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource) {
-        AppFilterInvocationSecurityMetadataSource securityMetadataSource = new AppFilterInvocationSecurityMetadataSource(filterInvocationSecurityMetadataSource,urlDao);
-
-        return securityMetadataSource;
-    }
+//    @Bean
+//    public AppFilterInvocationSecurityMetadataSource mySecurityMetadataSource(FilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource) {
+//        AppFilterInvocationSecurityMetadataSource securityMetadataSource = new AppFilterInvocationSecurityMetadataSource(filterInvocationSecurityMetadataSource,urlDao);
+//
+//        return securityMetadataSource;
+//    }
     @Bean
     public SessionRegistry getSessionRegistry(){
         SessionRegistry sessionRegistry=new SessionRegistryImpl();

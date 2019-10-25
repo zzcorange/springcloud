@@ -48,8 +48,10 @@ public class AppFilterInvocationSecurityMetadataSource implements FilterInvocati
             System.out.println("权限配置为空，请检查");
             System.exit(0);
         }
-
-
+        urlList.forEach((url)->{
+            urlRoleMap.put(url.getUrl(),url.getAuth());
+        });
+        System.out.println("拉取的链接配置为："+JSON.toJSONString(urlList));
 
         // TODO 从数据库加载权限配置
     }
@@ -57,7 +59,7 @@ public class AppFilterInvocationSecurityMetadataSource implements FilterInvocati
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     // 这里的需要从DB加载
-    private  Map<String,String> urlRoleMap = new HashMap<String,String>();
+    public  static   Map<String,String> urlRoleMap = new HashMap<String,String>();
 
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
@@ -76,6 +78,7 @@ public class AppFilterInvocationSecurityMetadataSource implements FilterInvocati
             System.out.println(url+"拉取的权限数据："+JSON.toJSONString(tempValue.toArray( new String[tempValue.size()])));
             return SecurityConfig.createList(tempValue.toArray( new String[tempValue.size()]));
         }
+        System.out.println("来拉取信息了"+url);
         return superMetadataSource.getAttributes(object);
     }
 
