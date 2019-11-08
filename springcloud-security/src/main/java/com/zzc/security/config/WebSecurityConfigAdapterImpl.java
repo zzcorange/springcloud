@@ -5,6 +5,7 @@ import com.zzc.security.dao.UrlDao;
 import com.zzc.security.entity.Role;
 import com.zzc.security.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,9 +59,9 @@ public class WebSecurityConfigAdapterImpl extends WebSecurityConfigurerAdapter {
     @Autowired
     SessionRegistry sessionRegistry;
 
-    @Autowired
+    @Autowired(required = false)
     private UrlDao urlDao;
-    @Autowired
+    @Autowired(required = false)
     private RoleDao roleDao;
     public static Map<String,User> loginUser = new HashMap<String,User>();
 @Bean
@@ -119,7 +120,7 @@ public UserDetailsService userDetailsService()  {
                 .antMatchers("/**","/**/*.jpg","/login",
                         "/authentication/form","/test/**",
                         "/error.html","/error.html?**",
-                        "/logout","/ignore/**").permitAll()
+                        "/logout","/ignore/**","/oauth/authorize*").permitAll()
 
                 .anyRequest().authenticated()
                 .accessDecisionManager(accessDecisionManager())
@@ -152,7 +153,8 @@ public UserDetailsService userDetailsService()  {
                 .and()
                 .sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true).expiredUrl("/error?accept=sessionExpired").sessionRegistry(sessionRegistry)
                 .and().sessionAuthenticationErrorUrl("/error.html")
-
+//                .and()
+//                .oauth2ResourceServer().authenticationEntryPoint()
 
 // .and().enableSessionUrlRewriting()
         ;
