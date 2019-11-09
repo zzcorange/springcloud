@@ -1,0 +1,54 @@
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: utf-8
+  servlet:
+    context-path: /
+spring:
+  application:
+    name: springcloud-security
+  thymeleaf:
+    cache: false
+    encoding: UTF-8
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: zzc123456
+    url: jdbc:mysql://localhost:3306/test?characterEncoding=utf-8&serverTimezone=UTC
+    druid:
+      initial-size: 1
+      max-active: 20
+      min-idle: 3
+      max-wait: 60000
+      pool-prepared-statements: false
+      validation-query: SELECT 'x'
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 30000
+      max-pool-prepared-statement-per-connection-size: 20
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+  mvc:
+    static-path-pattern: /**
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: WEB-INF/**
+#  main:
+#    allow-bean-definition-overriding: true
+logging:
+  level:
+    root: debug
+mybatis:
+  mapper-locations: classpath:/mappers/**Mapper.xml
+security:
+  oauth2:
+    client:
+      client-id: testclient
+      client-secret: 123456
